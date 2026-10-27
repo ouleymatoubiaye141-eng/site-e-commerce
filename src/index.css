@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-cream-50 text-bordeaux-950 font-sans antialiased;
+  }
+  h1, h2, h3, h4 {
+    @apply font-serif;
+  }
+  ::selection {
+    @apply bg-gold-300 text-bordeaux-900;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-medium transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-cream-50 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-primary {
+    @apply btn bg-bordeaux-800 text-cream-50 hover:bg-bordeaux-700 hover:shadow-soft active:scale-[0.98];
+  }
+  .btn-gold {
+    @apply btn bg-gradient-to-br from-gold-300 to-gold-500 text-bordeaux-900 hover:shadow-gold active:scale-[0.98] font-semibold;
+  }
+  .btn-ghost {
+    @apply btn bg-transparent text-bordeaux-800 hover:bg-cream-200;
+  }
+  .btn-outline {
+    @apply btn border border-bordeaux-300 text-bordeaux-800 hover:bg-bordeaux-50;
+  }
+  .card {
+    @apply rounded-2xl bg-cream-50 border border-cream-200 shadow-sm;
+  }
+  .input {
+    @apply w-full rounded-xl border border-cream-300 bg-cream-50 px-4 py-2.5 text-sm text-bordeaux-950 placeholder:text-bordeaux-300 focus:border-gold-400 focus:outline-none focus:ring-1 focus:ring-gold-400 transition;
+  }
+  .label {
+    @apply block text-xs font-medium uppercase tracking-wider text-bordeaux-600 mb-1.5;
+  }
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-semibold;
+  }
+  .skeleton {
+    @apply bg-gradient-to-r from-cream-200 via-cream-300 to-cream-200 bg-[length:200%_100%] animate-shimmer rounded-md;
+  }
+  .section-title {
+    @apply font-serif text-3xl md:text-4xl text-bordeaux-900;
+  }
+  .container-page {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: #faf5ec; }
+::-webkit-scrollbar-thumb { background: #ddc28f; border-radius: 8px; }
+::-webkit-scrollbar-thumb:hover { background: #cea965; }
+
+/* Hide scrollbar utility for horizontal carousels */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
