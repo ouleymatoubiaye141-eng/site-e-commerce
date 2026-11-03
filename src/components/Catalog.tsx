@@ -8,11 +8,19 @@ import { ProductModal } from './ProductModal';
 
 interface CatalogProps {
   initialFilters?: Partial<Filters>;
+  favoriteIds: string[];
+  onToggleFavorite: (productId: string) => void;
+  favoritesOnly?: boolean;
 }
 
 const PRODUCTS_PER_PAGE = 12;
 
-export function Catalog({ initialFilters }: CatalogProps) {
+export function Catalog({
+  initialFilters,
+  favoriteIds,
+  onToggleFavorite,
+  favoritesOnly = false,
+}: CatalogProps) {
   const { state } = useShop();
 
   const [filters, setFilters] = useState<Filters>({
@@ -45,6 +53,10 @@ export function Catalog({ initialFilters }: CatalogProps) {
 
   const filtered = useMemo(() => {
     let list = [...state.products];
+
+    if (favoritesOnly) {
+      list = list.filter((product) => favoriteIds.includes(product.id));
+    }
 
     if (filters.category === 'promo') {
       list = list.filter(
@@ -116,7 +128,7 @@ export function Catalog({ initialFilters }: CatalogProps) {
     }
 
     return list;
-  }, [state.products, filters]);
+  }, [state.products, filters, favoriteIds, favoritesOnly]);
 
   const totalPages = Math.ceil(filtered.length / PRODUCTS_PER_PAGE);
   const safePage = Math.min(currentPage, Math.max(1, totalPages));
@@ -191,10 +203,10 @@ export function Catalog({ initialFilters }: CatalogProps) {
   );
 
   return (
-    <section id="catalogue" className="bg-cream-50 py-12 md:py-20">
+    <section id="catalogue" className="bg-white py-8 md:py-14">
       <div className="container-page">
-        <div className="mb-9 text-center md:mb-12">
-          <div className="mb-4 flex items-center justify-center gap-3">
+        <div className="mb-6 text-left md:mb-9">
+          <div className="mb-2 flex items-center gap-3">
             <span className="h-px w-8 bg-bordeaux-400" />
             <span className="text-xs font-semibold uppercase tracking-[0.25em] text-bordeaux-700">
               BIWALI Couture&Beauty
@@ -202,18 +214,14 @@ export function Catalog({ initialFilters }: CatalogProps) {
             <span className="h-px w-8 bg-bordeaux-400" />
           </div>
 
-          <h2 className="section-title">
-            L'élégance, notre signature
+          <h2 className="font-serif text-2xl text-[#171717] sm:text-3xl">
+            {favoritesOnly ? 'Mes favoris' : 'À découvrir'}
           </h2>
 
-          <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-bordeaux-600 md:text-base">
-            Découvrez notre univers : tenues tradi-modernes,
-            pièces de cérémonie et essentiels beauté,
-            sélectionnés pour sublimer votre style.
-          </p>
+          
         </div>
 
-        <div className="mb-7 flex flex-wrap items-center justify-center gap-2 md:gap-3">
+        <div className="mb-5 flex gap-2 overflow-x-auto pb-2 md:mb-7">
           {quickCategories.map((item) => {
             const active = activeQuickCategory() === item.value;
 
@@ -235,7 +243,7 @@ export function Catalog({ initialFilters }: CatalogProps) {
           })}
         </div>
 
-        <div className="mb-6 rounded-2xl border border-cream-200 bg-white p-3 shadow-sm md:mb-8 md:p-5">
+        <div className="mb-5 border-y border-black/5 bg-white py-3 md:mb-7">
           <FiltersBar
             filters={filters}
             setFilters={setFilters}
@@ -275,12 +283,15 @@ export function Catalog({ initialFilters }: CatalogProps) {
             </div>
 
             <h3 className="text-lg font-semibold text-bordeaux-900">
-              Aucun article trouvé
+              {favoritesOnly
+                ? 'Aucun favori pour le moment'
+                : 'Aucun article trouvé'}
             </h3>
 
             <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-bordeaux-600">
-              Essayez une autre catégorie ou modifiez votre budget pour
-              découvrir nos articles.
+              {favoritesOnly
+                ? 'Ajoutez des articles à vos favoris en touchant le cœur sur leur fiche.'
+                : 'Essayez une autre catégorie ou modifiez votre budget pour découvrir nos articles.'}
             </p>
 
             <button
@@ -293,13 +304,15 @@ export function Catalog({ initialFilters }: CatalogProps) {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-3 sm:gap-x-5 sm:gap-y-8 lg:grid-cols-4 lg:gap-x-6">
+            <div className="grid grid-cols-2 gap-x-2 gap-y-7 sm:grid-cols-3 sm:gap-x-5 sm:gap-y-9 lg:grid-cols-4 lg:gap-x-7">
               {visibleProducts.map((product) => (
                 <ProductCard
                   key={product.id}
                   product={product}
                   onOpen={setSelected}
                   onQuickAdd={setSelected}
+                  isFavorite={favoriteIds.includes(product.id)}
+                  onToggleFavorite={onToggleFavorite}
                 />
               ))}
             </div>

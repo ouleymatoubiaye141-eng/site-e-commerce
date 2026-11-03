@@ -112,8 +112,11 @@ export function ShopProvider({ children }: { children: ReactNode }) {
 
   const productStock = useCallback(
     (product: Product, size: string, color: string): number => {
-      const key = product.sizes.length <= 1 && product.colors.length <= 1 ? 'default' : `${size}|${color}`;
-      return product.stock[key] ?? 0;
+      const key =
+        product.sizes.length <= 1 && product.colors.length <= 1
+          ? 'default'
+          : `${size}|${color}`;
+      return product.stock[key] ?? product.stock['default'] ?? 0;
     },
     [],
   );
@@ -185,8 +188,12 @@ export function ShopProvider({ children }: { children: ReactNode }) {
         const stock = { ...p.stock };
         for (const it of items) {
           if (it.productId !== p.id) continue;
-          const key = `${it.size}|${it.color}`;
-          stock[key] = Math.max(0, (stock[key] ?? 0) - it.qty);
+          const key =
+            p.sizes.length <= 1 && p.colors.length <= 1
+              ? 'default'
+              : `${it.size}|${it.color}`;
+          const currentStock = stock[key] ?? stock['default'] ?? 0;
+          stock[key] = Math.max(0, currentStock - it.qty);
         }
         return { ...p, stock };
       }),
