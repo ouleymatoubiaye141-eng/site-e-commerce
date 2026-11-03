@@ -13,6 +13,11 @@ import {
   AlertTriangle,
   RotateCcw,
   Truck,
+  BarChart3,
+  TrendingUp,
+  Users,
+  Wallet,
+  ShoppingBag,
 } from 'lucide-react';
 import { useShop } from '@/ShopContext';
 import {
@@ -27,7 +32,7 @@ import {
 import type { Category, Order, OrderStatus, Product, Settings as SettingsType } from '@/types';
 import { openWhatsApp } from '@/whatsapp';
 
-type Tab = 'products' | 'orders' | 'settings';
+type Tab = 'overview' | 'products' | 'orders' | 'settings';
 
 interface AdminPanelProps {
   open: boolean;
@@ -37,7 +42,7 @@ interface AdminPanelProps {
 export function AdminPanel({ open, onClose }: AdminPanelProps) {
   const { state, unlockAdmin, lockAdmin } = useShop();
   const [password, setPassword] = useState('');
-  const [tab, setTab] = useState<Tab>('products');
+  const [tab, setTab] = useState<Tab>('overview');
 
   if (!open) return null;
 
@@ -67,7 +72,7 @@ export function AdminPanel({ open, onClose }: AdminPanelProps) {
             Déverrouiller
           </button>
           <p className="text-[10px] text-bordeaux-400 mt-3">
-            Mot de passe par défaut : <strong>admin</strong> (modifiable dans les paramètres)
+            Utilisez le mot de passe administrateur configuré dans les paramètres.
           </p>
           <button onClick={onClose} className="btn-ghost w-full mt-2 text-xs">Annuler</button>
         </div>
@@ -76,6 +81,7 @@ export function AdminPanel({ open, onClose }: AdminPanelProps) {
   }
 
   const tabs: { key: Tab; label: string; icon: typeof Package }[] = [
+    { key: 'overview', label: 'Vue d’ensemble', icon: BarChart3 },
     { key: 'products', label: 'Produits & Stocks', icon: Package },
     { key: 'orders', label: 'Commandes', icon: ClipboardList },
     { key: 'settings', label: 'Paramètres', icon: Settings },
@@ -121,10 +127,156 @@ export function AdminPanel({ open, onClose }: AdminPanelProps) {
         </div>
 
         <div className="flex-1 overflow-y-auto p-5">
-          {tab === 'products' && <ProductsTab />}
+          {tab === 'overview' && <OverviewTab />}
+         {tab === 'products' && <ProductsTab />}
           {tab === 'orders' && <OrdersTab />}
           {tab === 'settings' && <SettingsTab />}
         </div>
+      </div>
+    </div>
+  );
+}
+
+
+/* ============ Overview tab ============ */
+
+function OverviewTab() {
+  const stats = [
+    {
+      label: 'Chiffre d’affaires',
+      value: '1 250 000',
+      suffix: 'FCFA',
+      icon: Wallet,
+      detail: 'Ventes simulées',
+    },
+    {
+      label: 'Commandes',
+      value: '48',
+      suffix: '',
+      icon: ShoppingBag,
+      detail: 'Commandes simulées',
+    },
+    {
+      label: 'Clients',
+      value: '36',
+      suffix: '',
+      icon: Users,
+      detail: 'Clients simulés',
+    },
+    {
+      label: 'Produits',
+      value: '14',
+      suffix: '',
+      icon: Package,
+      detail: 'Catalogue de démonstration',
+    },
+    {
+      label: 'Bénéfice estimé',
+      value: '425 000',
+      suffix: 'FCFA',
+      icon: TrendingUp,
+      detail: 'Estimation fictive',
+    },
+  ];
+
+  const sales = [
+    { day: 'Lun', amount: 120000 },
+    { day: 'Mar', amount: 185000 },
+    { day: 'Mer', amount: 95000 },
+    { day: 'Jeu', amount: 240000 },
+    { day: 'Ven', amount: 175000 },
+    { day: 'Sam', amount: 290000 },
+    { day: 'Dim', amount: 145000 },
+  ];
+
+  const maxSales = Math.max(...sales.map((item) => item.amount));
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <h2 className="font-serif text-2xl text-bordeaux-900">
+            Vue d’ensemble
+          </h2>
+          <p className="text-sm text-bordeaux-500 mt-1">
+            Aperçu de l’activité de BIWALI Couture & Beauty.
+          </p>
+        </div>
+        <span className="inline-flex w-fit items-center gap-2 rounded-full bg-gold-100 px-3 py-2 text-xs font-medium text-bordeaux-800">
+          <span className="w-2 h-2 rounded-full bg-amber-500" />
+          Données de démonstration
+        </span>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
+        {stats.map((stat) => (
+          <div
+            key={stat.label}
+            className="card p-4 border border-cream-200"
+          >
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-sm text-bordeaux-500">{stat.label}</p>
+              <div className="w-10 h-10 rounded-xl bg-bordeaux-100 text-bordeaux-800 grid place-items-center">
+                <stat.icon size={19} />
+              </div>
+            </div>
+            <p className="font-serif text-2xl text-bordeaux-900 mt-3">
+              {stat.value}
+            </p>
+            {stat.suffix && (
+              <p className="text-xs text-bordeaux-600 mt-0.5">{stat.suffix}</p>
+            )}
+            <p className="text-[11px] text-bordeaux-400 mt-2">{stat.detail}</p>
+          </div>
+        ))}
+      </div>
+
+      <section className="card p-5 border border-cream-200">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-6">
+          <div>
+            <h3 className="font-serif text-lg text-bordeaux-900">
+              Activité des ventes
+            </h3>
+            <p className="text-xs text-bordeaux-500 mt-1">
+              Répartition illustrative sur les 7 derniers jours
+            </p>
+          </div>
+          <span className="text-xs text-bordeaux-500 bg-cream-100 rounded-full px-3 py-2">
+            Cette semaine
+          </span>
+        </div>
+
+        <div className="flex items-end justify-between gap-2 h-48">
+          {sales.map((item) => (
+            <div key={item.day} className="flex-1 h-full flex flex-col justify-end items-center gap-2">
+              <div className="text-[10px] text-bordeaux-500">
+                {Math.round(item.amount / 1000)}k
+              </div>
+              <div
+                className="w-full max-w-12 rounded-t-lg bg-bordeaux-700 hover:bg-bordeaux-500 transition-colors"
+                style={{ height: `${(item.amount / maxSales) * 100}%` }}
+                title={`${item.amount.toLocaleString('fr-FR')} FCFA`}
+              />
+              <span className="text-xs text-bordeaux-500">{item.day}</span>
+            </div>
+          ))}
+        </div>
+        <p className="text-[10px] text-bordeaux-400 mt-5 text-center">
+          Les montants présentés sont fictifs et ne correspondent pas aux ventes réelles.
+        </p>
+      </section>
+
+      <div className="rounded-2xl bg-bordeaux-900 text-cream-50 p-5">
+        <p className="text-xs text-gold-300 uppercase tracking-widest">
+          BIWALI Couture & Beauty
+        </p>
+        <h3 className="font-serif text-xl mt-2">
+          Gérez votre boutique en toute simplicité.
+        </h3>
+        <p className="text-sm text-cream-200 mt-2 leading-relaxed">
+          Retrouvez vos produits, vos stocks, vos commandes et les paramètres
+          de votre boutique depuis un seul espace.
+        </p>
       </div>
     </div>
   );
